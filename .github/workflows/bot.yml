@@ -1,24 +1,32 @@
 name: UK49s Prediction Bot
 
 on:
-  schedule:
-    - cron: "0 */6 * * *"  # every 6 hours
   workflow_dispatch:
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.10
-      - name: Run bot
+
+      - name: Install dependencies
         run: |
-          python bot.py
-      - name: Upload predictions
-        uses: actions/upload-artifact@v3
+          python -m pip install --upgrade pip
+
+      - name: Run bot
+        run: python bot.py
+
+      - name: Show predictions
+        run: cat predictions.txt
+
+      - name: Upload predictions artifact
+        uses: actions/upload-artifact@v4
         with:
           name: predictions
           path: predictions.txt
