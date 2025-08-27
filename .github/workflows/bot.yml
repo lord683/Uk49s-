@@ -35,54 +35,60 @@ jobs:
       - name: Run prediction bot
         run: python bot.py
 
-      - name: Create prediction files for repository
+      - name: Create simple prediction file
         run: |
-          # Create simple prediction files that will show in your repo
-          echo "🎯 UK49s PREDICTIONS - $(date)" > PREDICTIONS.txt
-          echo "=================================" >> PREDICTIONS.txt
+          # Create a simple prediction file
+          echo "🎯 UK49s PREDICTIONS - $(date +'%Y-%m-%d %H:%M')" > PREDICTIONS.txt
+          echo "==============================================" >> PREDICTIONS.txt
           echo "" >> PREDICTIONS.txt
           
-          # Add Lunchtime predictions
-          echo "⭐ LUNCHTIME $(date +%Y-%m-%d):" >> PREDICTIONS.txt
-          python -c "
+          # Generate predictions using Python
+          python3 << 'EOF'
           import pandas as pd
           from collections import Counter
-          data = pd.read_csv('uk49s_results.csv')
-          lunch = data[data['draw'] == 'Lunchtime']
-          nums = [num for i in range(1,7) for num in lunch[f'n{i}'].tolist()]
-          common = Counter(nums).most_common(6)
-          pred = sorted([num for num, count in common])
-          print(f'Straight Numbers: {pred}')
-          print(f'Bet: {"-".join(map(str, pred))}')
-          " >> PREDICTIONS.txt
+          import numpy as np
+          
+          try:
+              # Read data
+              data = pd.read_csv('uk49s_results.csv')
+              
+              # Lunchtime predictions
+              lunch = data[data['draw'] == 'Lunchtime']
+              if not lunch.empty:
+                  nums = []
+                  for i in range(1, 7):
+                      nums.extend(lunch[f'n{i}'].tolist())
+                  common = Counter(nums).most_common(6)
+                  pred = sorted([num for num, count in common])
+                  
+                  with open('PREDICTIONS.txt', 'a') as f:
+                      f.write("⭐ LUNCHTIME:\n")
+                      f.write(f"Numbers: {pred}\n")
+                      f.write(f"Bet: {'-'.join(map(str, pred))}\n\n")
+              
+              # Teatime predictions
+              tea = data[data['draw'] == 'Teatime']
+              if not tea.empty:
+                  nums = []
+                  for i in range(1, 7):
+                      nums.extend(tea[f'n{i}'].tolist())
+                  common = Counter(nums).most_common(6)
+                  pred = sorted([num for num, count in common])
+                  
+                  with open('PREDICTIONS.txt', 'a') as f:
+                      f.write("⭐ TEATIME:\n")
+                      f.write(f"Numbers: {pred}\n")
+                      f.write(f"Bet: {'-'.join(map(str, pred))}\n")
+                      
+          except Exception as e:
+              print(f"Error: {e}")
+          EOF
           
           echo "" >> PREDICTIONS.txt
-          
-          # Add Teatime predictions
-          echo "⭐ TEATIME $(date +%Y-%m-%d):" >> PREDICTIONS.txt
-          python -c "
-          import pandas as pd
-          from collections import Counter
-          data = pd.read_csv('uk49s_results.csv')
-          tea = data[data['draw'] == 'Teatime']
-          nums = [num for i in range(1,7) for num in tea[f'n{i}'].tolist()]
-          common = Counter(nums).most_common(6)
-          pred = sorted([num for num, count in common])
-          print(f'Straight Numbers: {pred}')
-          print(f'Bet: {"-".join(map(str, pred))}')
-          " >> PREDICTIONS.txt
-          
-          # Create a simple results file
-          echo "LATEST UK49s PREDICTIONS" > results.md
-          echo "========================" >> results.md
-          echo "Generated: $(date)" >> results.md
-          echo "" >> results.md
-          cat PREDICTIONS.txt >> results.md
+          echo "Generated automatically by UK49s Prediction Bot" >> PREDICTIONS.txt
 
-      - name: Upload prediction files
+      - name: Upload prediction file
         uses: actions/upload-artifact@v4
         with:
-          name: prediction-files
-          path: |
-            PREDICTIONS.txt
-            results.md
+          name: prediction-file
+          path: PREDICTIONS.txt
