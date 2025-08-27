@@ -1,11 +1,64 @@
-🎯 UK49s DAILY PREDICTIONS
-==========================
-Generated: 2025-08-27 16:39
+🎯 ADVANCED UK49s PREDICTIONS
+=============================
+Generated: 2025-08-27 16:52:24
 
-⭐ LUNCHTIME:
-Numbers: [5, 7, 11, 22, 24, 29]
-Bet: 5-7-11-22-24-29
+⭐ LUNCHTIME PREDICTION
+========================================
+🎯 Primary Prediction: [1, 2, 3, 4, 5, 8]
+   Bet Format: 1-2-3-4-5-8
 
-⭐ TEATIME:
-Numbers: [8, 26, 29, 36, 38, 49]
-Bet: 8-26-29-36-38-49
+🔄 Alternative Predictions:
+   Option 2: [1, 3, 4, 5, 7, 8]
+   Option 3: [1, 2, 5, 6, 7, 8]
+
+📊 TREND ANALYSIS:
+   Total draws analyzed: 24
+   Date range: 2025-08-02 to 2025-08-26
+
+🔥 Most common numbers:
+   24:   7 times
+   29:   6 times
+   30:   5 times
+    5:   5 times
+    7:   5 times
+   22:   5 times
+   44:   5 times
+   11:   5 times
+    4:   4 times
+   13:   4 times
+
+========================================
+
+⭐ TEATIME PREDICTION
+========================================
+🎯 Primary Prediction: [3, 4, 5, 6, 7, 8]
+   Bet Format: 3-4-5-6-7-8
+
+🔄 Alternative Predictions:
+   Option 2: [1, 2, 3, 6, 7, 8]
+   Option 3: [1, 2, 3, 4, 7, 8]
+
+📊 TREND ANALYSIS:
+   Total draws analyzed: 24
+   Date range: 2025-08-02 to 2025-08-26
+
+🔥 Most common numbers:
+   49:   7 times
+    8:   5 times
+   44:   5 times
+   36:   5 times
+   26:   5 times
+   38:   5 times
+   29:   5 times
+   17:   4 times
+   19:   4 times
+    4:   4 times
+
+========================================
+
+🤖 Prediction Strategies Used:
+- Frequency Analysis with Recency Weighting
+- Pattern Recognition (Pairs & Triplets)
+- Hot/Cold Number Identification
+- Machine Learning (Random Forest)
+- Smart Combination Generation
