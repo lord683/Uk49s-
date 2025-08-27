@@ -8,6 +8,9 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: write
+
 jobs:
   predict:
     runs-on: ubuntu-latest
@@ -18,6 +21,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -27,13 +32,57 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run prediction bot and display results
+      - name: Run prediction bot
+        run: python bot.py
+
+      - name: Create prediction files for repository
         run: |
-          python bot.py
-          echo "=========================================="
-          echo "🎯 PREDICTION RESULTS (NO DOWNLOAD NEEDED)"
-          echo "=========================================="
-          cat predictions_output.txt
-          echo ""
-          echo "⭐ QUICK PREDICTIONS FOR NEXT DRAW:"
-          cat next_predictions.txt
+          # Create simple prediction files that will show in your repo
+          echo "🎯 UK49s PREDICTIONS - $(date)" > PREDICTIONS.txt
+          echo "=================================" >> PREDICTIONS.txt
+          echo "" >> PREDICTIONS.txt
+          
+          # Add Lunchtime predictions
+          echo "⭐ LUNCHTIME $(date +%Y-%m-%d):" >> PREDICTIONS.txt
+          python -c "
+          import pandas as pd
+          from collections import Counter
+          data = pd.read_csv('uk49s_results.csv')
+          lunch = data[data['draw'] == 'Lunchtime']
+          nums = [num for i in range(1,7) for num in lunch[f'n{i}'].tolist()]
+          common = Counter(nums).most_common(6)
+          pred = sorted([num for num, count in common])
+          print(f'Straight Numbers: {pred}')
+          print(f'Bet: {"-".join(map(str, pred))}')
+          " >> PREDICTIONS.txt
+          
+          echo "" >> PREDICTIONS.txt
+          
+          # Add Teatime predictions
+          echo "⭐ TEATIME $(date +%Y-%m-%d):" >> PREDICTIONS.txt
+          python -c "
+          import pandas as pd
+          from collections import Counter
+          data = pd.read_csv('uk49s_results.csv')
+          tea = data[data['draw'] == 'Teatime']
+          nums = [num for i in range(1,7) for num in tea[f'n{i}'].tolist()]
+          common = Counter(nums).most_common(6)
+          pred = sorted([num for num, count in common])
+          print(f'Straight Numbers: {pred}')
+          print(f'Bet: {"-".join(map(str, pred))}')
+          " >> PREDICTIONS.txt
+          
+          # Create a simple results file
+          echo "LATEST UK49s PREDICTIONS" > results.md
+          echo "========================" >> results.md
+          echo "Generated: $(date)" >> results.md
+          echo "" >> results.md
+          cat PREDICTIONS.txt >> results.md
+
+      - name: Upload prediction files
+        uses: actions/upload-artifact@v4
+        with:
+          name: prediction-files
+          path: |
+            PREDICTIONS.txt
+            results.md
