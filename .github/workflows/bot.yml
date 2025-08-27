@@ -35,60 +35,17 @@ jobs:
       - name: Run prediction bot
         run: python bot.py
 
-      - name: Create simple prediction file
+      - name: Commit and push prediction file
         run: |
-          # Create a simple prediction file
-          echo "🎯 UK49s PREDICTIONS - $(date +'%Y-%m-%d %H:%M')" > PREDICTIONS.txt
-          echo "==============================================" >> PREDICTIONS.txt
-          echo "" >> PREDICTIONS.txt
-          
-          # Generate predictions using Python
-          python3 << 'EOF'
-          import pandas as pd
-          from collections import Counter
-          import numpy as np
-          
-          try:
-              # Read data
-              data = pd.read_csv('uk49s_results.csv')
-              
-              # Lunchtime predictions
-              lunch = data[data['draw'] == 'Lunchtime']
-              if not lunch.empty:
-                  nums = []
-                  for i in range(1, 7):
-                      nums.extend(lunch[f'n{i}'].tolist())
-                  common = Counter(nums).most_common(6)
-                  pred = sorted([num for num, count in common])
-                  
-                  with open('PREDICTIONS.txt', 'a') as f:
-                      f.write("⭐ LUNCHTIME:\n")
-                      f.write(f"Numbers: {pred}\n")
-                      f.write(f"Bet: {'-'.join(map(str, pred))}\n\n")
-              
-              # Teatime predictions
-              tea = data[data['draw'] == 'Teatime']
-              if not tea.empty:
-                  nums = []
-                  for i in range(1, 7):
-                      nums.extend(tea[f'n{i}'].tolist())
-                  common = Counter(nums).most_common(6)
-                  pred = sorted([num for num, count in common])
-                  
-                  with open('PREDICTIONS.txt', 'a') as f:
-                      f.write("⭐ TEATIME:\n")
-                      f.write(f"Numbers: {pred}\n")
-                      f.write(f"Bet: {'-'.join(map(str, pred))}\n")
-                      
-          except Exception as e:
-              print(f"Error: {e}")
-          EOF
-          
-          echo "" >> PREDICTIONS.txt
-          echo "Generated automatically by UK49s Prediction Bot" >> PREDICTIONS.txt
-
-      - name: Upload prediction file
-        uses: actions/upload-artifact@v4
-        with:
-          name: prediction-file
-          path: PREDICTIONS.txt
+          # Check if prediction file was created
+          if [ -f "PREDICTIONS.txt" ]; then
+            git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git config --local user.name "github-actions[bot]"
+            git add PREDICTIONS.txt
+            git commit -m "🤖 Update UK49s predictions - $(date +'%Y-%m-%d %H:%M')"
+            git push
+            echo "✅ Prediction file committed to repository"
+          else
+            echo "❌ PREDICTIONS.txt file not found"
+            ls -la
+          fi
