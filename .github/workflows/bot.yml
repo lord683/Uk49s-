@@ -1,35 +1,48 @@
 name: UK49s Prediction Bot
+run-name: 🎯 UK49s Prediction - ${{ github.actor }}
 
-# Manual trigger only
 on:
+  schedule:
+    - cron: '0 8 * * *'   # Run daily at 8:00 AM UTC (before draws)
   workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
-  run-bot:
+  predict:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
 
     steps:
-      # 1️⃣ Checkout repository
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      # 2️⃣ Setup Python 3.10
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: '3.10'
 
-      # 3️⃣ Upgrade pip
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip
-
-      # 4️⃣ Install dependencies (if you have any)
       - name: Install dependencies
-        run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        run: pip install -r requirements.txt
 
-      # 5️⃣ Run bot and show predictions in logs
-      - name: Run bot
+      - name: Run prediction bot
+        run: python bot.py
+
+      - name: Upload prediction results
+        uses: actions/upload-artifact@v4
+        with:
+          name: prediction-results
+          path: |
+            predictions_output.txt
+            next_predictions.txt
+
+      - name: Commit and push results
         run: |
-          python bot.py
-          echo "==== UK49s Predictions ===="
-          cat predictions.txt
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add predictions_output.txt
+          git add next_predictions.txt
+          git commit -m "Update UK49s predictions - $(date +'%Y-%m-%d %H:%M')" || echo "No changes to commit"
+          git push
