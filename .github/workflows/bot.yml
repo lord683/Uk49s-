@@ -1,4 +1,4 @@
-name: Run UK49s Bot
+name: UK49s Prediction Bot
 
 on:
   schedule:
@@ -8,19 +8,17 @@ on:
 jobs:
   run-bot:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
-
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"  # <--- change from 3.1 to 3.10
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
+          python-version: 3.10
       - name: Run bot
-        run: python bot.py
+        run: |
+          python bot.py
+      - name: Upload predictions
+        uses: actions/upload-artifact@v3
+        with:
+          name: predictions
+          path: predictions.txt
