@@ -1,5 +1,5 @@
-name: Advanced UK49s Prediction Bot
-run-name: 🎯 Advanced Prediction - ${{ github.actor }}
+name: UK49s Transparent Predictions
+run-name: 🎯 UK49s Predictions - ${{ github.actor }}
 
 on:
   schedule:
@@ -14,10 +14,6 @@ permissions:
 jobs:
   predict:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,10 +25,10 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install advanced dependencies
-        run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: pip install pandas numpy
 
-      - name: Run advanced prediction bot
+      - name: Run transparent prediction bot
         run: python bot.py
 
       - name: Commit and push predictions
@@ -40,5 +36,5 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add PREDICTIONS.txt
-          git commit -m "🤖 Advanced predictions update - $(date +'%Y-%m-%d %H:%M')"
+          git commit -m "🎯 Transparent predictions - $(date +'%Y-%m-%d %H:%M')"
           git push
