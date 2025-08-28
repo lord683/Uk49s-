@@ -3,7 +3,7 @@ import numpy as np
 from collections import Counter, defaultdict
 from datetime import datetime
 import math
-from scipy import stats
+from scipy import stats as sp_stats
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -54,8 +54,8 @@ class CompletePredictor:
         # 5. SEQUENCE Analysis
         analysis['sequences'] = self.sequence_analysis(draws)
         
-        # 6. STATISTICAL Analysis
-        analysis['stats'] = self.statistical_analysis(draws)
+        # 6. STATISTICAL Analysis (FIXED - renamed from stats to statistics)
+        analysis['statistics'] = self.statistical_analysis(draws)
         
         # 7. TREND Analysis
         analysis['trends'] = self.trend_analysis(draws)
@@ -215,27 +215,33 @@ class CompletePredictor:
         return sequences
 
     def statistical_analysis(self, draws):
-        """Complete statistical analysis"""
-        stats = {}
+        """Complete statistical analysis - FIXED naming conflict"""
+        stats_result = {}  # Renamed from stats to stats_result
         
         # Basic statistics
         all_numbers = []
         for _, row in draws.iterrows():
             all_numbers.extend([row[f'n{i}'] for i in range(1, 7)])
         
-        stats['mean'] = np.mean(all_numbers)
-        stats['median'] = np.median(all_numbers)
-        stats['std'] = np.std(all_numbers)
-        stats['skew'] = stats.skew(all_numbers)
-        stats['kurtosis'] = stats.kurtosis(all_numbers)
+        stats_result['mean'] = np.mean(all_numbers)
+        stats_result['median'] = np.median(all_numbers)
+        stats_result['std'] = np.std(all_numbers)
+        
+        # Only calculate skew and kurtosis if we have enough data
+        if len(all_numbers) > 2:
+            stats_result['skew'] = sp_stats.skew(all_numbers)
+            stats_result['kurtosis'] = sp_stats.kurtosis(all_numbers)
+        else:
+            stats_result['skew'] = 0
+            stats_result['kurtosis'] = 0
         
         # Draw statistics
         sums = [sum([row[f'n{i}'] for i in range(1, 7)]) for _, row in draws.iterrows()]
-        stats['sum_mean'] = np.mean(sums)
-        stats['sum_std'] = np.std(sums)
-        stats['sum_range'] = (min(sums), max(sums))
+        stats_result['sum_mean'] = np.mean(sums)
+        stats_result['sum_std'] = np.std(sums)
+        stats_result['sum_range'] = (min(sums), max(sums))
         
-        return stats
+        return stats_result
 
     def trend_analysis(self, draws):
         """Trend and momentum analysis"""
