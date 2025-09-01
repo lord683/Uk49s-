@@ -1,11 +1,11 @@
 UK49s Certain Numbers
 =====================
 
-Lunchtime: [22, 15, 1, 24]
-Bet: 22-15-1-24
+Lunchtime: [27, 22, 18, 24]
+Bet: 27-22-18-24
 
-Teatime: [38, 29, 14, 24]
-Bet: 38-29-14-24
+Teatime: [7, 29, 14, 19]
+Bet: 7-29-14-19
 
-Generated: 2025-09-01 08:50:39
+Generated: 2025-09-01 16:38:15
 Based on mathematical analysis of historical data
