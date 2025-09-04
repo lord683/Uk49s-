@@ -1,40 +1,41 @@
-name: UK49s Prediction Bot
+name: Generate UK49s Predictions
 
 on:
   push:
-  workflow_dispatch:
+    branches:
+      - main
   schedule:
-    - cron: "0 7,13 * * *"   # Run every day at 7am & 1pm UTC (adjust for SA time)
+    - cron: '0 8 * * *'  # runs every day at 08:00 UTC
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+    - name: Checkout repo
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          pip install pandas numpy
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas numpy
 
-      - name: Run Predictor Script
-        run: |
-          python predictor.py   # this will generate PREDICTIONS.txt
+    - name: Run UK49s bot
+      run: |
+        python bot.py
 
-      - name: Commit predictions
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add PREDICTIONS.txt
-          if git diff --cached --quiet; then
-            echo "No new predictions to commit ✅"
-          else
-            git commit -m "Auto update predictions $(date)"
-            git push
-          fi
+    - name: Check output
+      run: cat PREDICTIONS.txt
+
+    - name: Commit & Push predictions
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "GitHub Actions"
+        git add PREDICTIONS.txt
+        git commit -m "Update UK49s predictions [skip ci]" || echo "No changes to commit"
+        git push origin main
