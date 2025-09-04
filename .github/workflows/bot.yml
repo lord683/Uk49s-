@@ -1,40 +1,34 @@
-name: UK49s Transparent Predictions
-run-name: 🎯 UK49s Predictions - ${{ github.actor }}
+name: Auto Commit
 
 on:
-  schedule:
-    - cron: '0 8 * * *'   # Run daily at 8:00 AM UTC
-  workflow_dispatch:
   push:
-    branches: [ main ]
-
-permissions:
-  contents: write
+  workflow_dispatch:
+  schedule:
+    - cron: "0 * * * *"   # every hour (optional, remove if not needed)
 
 jobs:
-  predict:
+  commit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install dependencies
-        run: pip install pandas numpy
-
-      - name: Run transparent prediction bot
-        run: python bot.py
-
-      - name: Commit and push predictions
+      - name: Set up Git
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add PREDICTIONS.txt
-          git commit -m "🎯 Transparent predictions - $(date +'%Y-%m-%d %H:%M')"
-          git push
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Make changes (example)
+        run: |
+          # Your script that generates/updates files goes here
+          echo "Update run at $(date)" >> updates.log
+
+      - name: Commit and push if changes
+        run: |
+          git add .
+          if git diff --cached --quiet; then
+            echo "No changes to commit ✅"
+          else
+            git commit -m "Auto update: $(date)"
+            git push
+          fi
